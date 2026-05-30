@@ -12,7 +12,7 @@ interface LoginDao {
     @Insert
     suspend fun insertDetails(data: LoginTable)
 
-    @Query("SELECT * FROM LoginDetails WHERE Email = :email AND Password = :password LIMIT 1")
-    suspend fun getLoginDetailsByEmailAndPassword(email: String, password: String): LoginTable?
+    @Query("SELECT * FROM LoginDetails WHERE Email = :email LIMIT 1")
+    suspend fun getLoginDetailsByEmail(email: String): LoginTable?
 }
 

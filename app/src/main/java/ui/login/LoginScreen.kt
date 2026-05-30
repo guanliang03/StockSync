@@ -73,6 +73,7 @@ fun LoginScreen(
     val loginSuccess by viewModel.loginSuccess.observeAsState(false)
     val errorMessage by viewModel.errorMessage.observeAsState()
     val isLoading by viewModel.isLoading.observeAsState(false)
+    val loginLocked by viewModel.loginLocked.observeAsState(false)
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -224,7 +225,7 @@ fun LoginScreen(
                             )
                         )
 
-                        // Show errors
+                        // Show errors and lockout state
                         val hasError = !formError.isNullOrEmpty() || !errorMessage.isNullOrEmpty()
                         if (hasError) {
                             val errorToShow = formError ?: errorMessage ?: ""
@@ -243,14 +244,18 @@ fun LoginScreen(
                                     formError = "Matric Number and Password must not be empty"
                                 } else {
                                     formError = null
-                                    viewModel.validateLogin(email, password)
+                                    if (loginLocked) {
+                                        viewModel.validateLogin(email, password)
+                                    } else {
+                                        viewModel.validateLogin(email, password)
+                                    }
                                 }
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(50.dp),
                             shape = RoundedCornerShape(12.dp),
-                            enabled = !isLoading
+                            enabled = !isLoading && !loginLocked
                         ) {
                             if (isLoading) {
                                 CircularProgressIndicator(
