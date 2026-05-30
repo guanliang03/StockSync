@@ -19,9 +19,24 @@ Requirements
 
 Build & Run
 -----------
+### Option 1: Via Android Studio
 1. Open the project in Android Studio.
 2. Allow Gradle to sync and download dependencies.
 3. Run the app on an emulator or a connected device.
+
+### Option 2: Via Command Line (Gradle & ADB)
+1. Ensure your Android SDK path is set in `local.properties`:
+   ```properties
+   sdk.dir=C:/Users/liewg/AppData/Local/Android/Sdk
+   ```
+2. Build and install the app on your running emulator/device:
+   ```bash
+   .\gradlew.bat installDebug
+   ```
+3. Start the application:
+   ```bash
+   adb shell am start -n com.seis2.loanlit/.MainActivity
+   ```
 
 Notes
 -----
