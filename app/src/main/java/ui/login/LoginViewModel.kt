@@ -79,7 +79,7 @@ class LoginViewModel(application: Application, private val loginRepository: Logi
                 } else {
                     loginLocked.postValue(false)
                     val remainingAttempts = lockoutThreshold - failedAttempts
-                    errorMessage.postValue("Invalid Matric Number or Password. $remainingAttempts tries left.")
+                    errorMessage.postValue("Invalid Username or Password. $remainingAttempts tries left.")
                 }
             }
         }
