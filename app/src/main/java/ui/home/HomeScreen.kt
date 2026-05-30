@@ -82,7 +82,6 @@ import ui.InventoryTopAppBar
 import com.seis2.loanlit.R
 import data.Item
 import ui.AppViewModelProvider
-import ui.item.formatedPrice
 import ui.navigation.NavigationDestination
 import ui.theme.InventoryTheme
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -133,9 +132,9 @@ fun HomeScreen(
         if (uri != null) {
             try {
                 context.contentResolver.openOutputStream(uri)?.use { outputStream ->
-                    val csvHeader = "ID,Name,Category,Storage Location,Unit Price,Quantity,Discontinued,Remarks\n"
+                    val csvHeader = "ID,Name,Category,Quantity,Discontinued,Remarks\n"
                     val csvContent = itemList.joinToString("\n") { item ->
-                        "${item.id},\"${escapeCsv(item.name)}\",\"${escapeCsv(item.category)}\",\"${escapeCsv(item.location)}\",${item.price},${item.quantity},${item.discontinued},\"${escapeCsv(item.itemDetails)}\""
+                        "${item.id},\"${escapeCsv(item.name)}\",\"${escapeCsv(item.category)}\",${item.quantity},${item.discontinued},\"${escapeCsv(item.itemDetails)}\""
                     }
                     outputStream.write((csvHeader + csvContent).toByteArray())
                 }
@@ -182,23 +181,19 @@ fun HomeScreen(
                     // Stats Summary
                     val totalItems = itemList.size
                     val totalStock = itemList.sumOf { it.quantity }
-                    val totalValue = itemList.sumOf { it.price * it.quantity }
                     
                     textPaint.apply { color = AndroidColor.BLACK; isFakeBoldText = true; textSize = 11f }
                     canvas.drawText("Total Items: $totalItems", 30f, 110f, textPaint)
-                    canvas.drawText("Total Stock: $totalStock", 200f, 110f, textPaint)
-                    canvas.drawText("Total Value: $${String.format("%.2f", totalValue)}", 380f, 110f, textPaint)
+                    canvas.drawText("Total Stock: $totalStock", 250f, 110f, textPaint)
                     
                     canvas.drawLine(30f, 125f, 565f, 125f, paint)
                     
                     // Draw Table Header
                     textPaint.apply { textSize = 10f; isFakeBoldText = true }
                     canvas.drawText("Name", 30f, 145f, textPaint)
-                    canvas.drawText("Category", 180f, 145f, textPaint)
-                    canvas.drawText("Location", 280f, 145f, textPaint)
-                    canvas.drawText("Price", 380f, 145f, textPaint)
-                    canvas.drawText("Stock", 450f, 145f, textPaint)
-                    canvas.drawText("Status", 500f, 145f, textPaint)
+                    canvas.drawText("Category", 200f, 145f, textPaint)
+                    canvas.drawText("Stock", 380f, 145f, textPaint)
+                    canvas.drawText("Status", 460f, 145f, textPaint)
                     
                     canvas.drawLine(30f, 155f, 565f, 155f, paint)
                     
@@ -226,11 +221,9 @@ fun HomeScreen(
                             // Table Header
                             textPaint.apply { isFakeBoldText = true }
                             currentCanvas.drawText("Name", 30f, 85f, textPaint)
-                            currentCanvas.drawText("Category", 180f, 85f, textPaint)
-                            currentCanvas.drawText("Location", 280f, 85f, textPaint)
-                            currentCanvas.drawText("Price", 380f, 85f, textPaint)
-                            currentCanvas.drawText("Stock", 450f, 85f, textPaint)
-                            currentCanvas.drawText("Status", 500f, 85f, textPaint)
+                            currentCanvas.drawText("Category", 200f, 85f, textPaint)
+                            currentCanvas.drawText("Stock", 380f, 85f, textPaint)
+                            currentCanvas.drawText("Status", 460f, 85f, textPaint)
                             currentCanvas.drawLine(30f, 95f, 565f, 95f, paint)
                             
                             textPaint.isFakeBoldText = false
@@ -240,20 +233,17 @@ fun HomeScreen(
                         val statusText = when {
                             item.discontinued -> "Discontinued"
                             item.quantity == 0 -> "Out of Stock"
-                            item.quantity in 1..5 -> "Low Stock"
+                            item.quantity in 1..item.lowStockThreshold -> "Low Stock"
                             else -> "In Stock"
                         }
                         
-                        val tName = if (item.name.length > 22) item.name.take(20) + ".." else item.name
-                        val tCat = if (item.category.length > 15) item.category.take(13) + ".." else item.category
-                        val tLoc = if (item.location.length > 15) item.location.take(13) + ".." else item.location
+                        val tName = if (item.name.length > 25) item.name.take(23) + ".." else item.name
+                        val tCat = if (item.category.length > 20) item.category.take(18) + ".." else item.category
                         
                         currentCanvas.drawText(tName, 30f, y, textPaint)
-                        currentCanvas.drawText(tCat, 180f, y, textPaint)
-                        currentCanvas.drawText(tLoc, 280f, y, textPaint)
-                        currentCanvas.drawText("$${String.format("%.2f", item.price)}", 380f, y, textPaint)
-                        currentCanvas.drawText(item.quantity.toString(), 450f, y, textPaint)
-                        currentCanvas.drawText(statusText, 500f, y, textPaint)
+                        currentCanvas.drawText(tCat, 200f, y, textPaint)
+                        currentCanvas.drawText(item.quantity.toString(), 380f, y, textPaint)
+                        currentCanvas.drawText(statusText, 460f, y, textPaint)
                         
                         y += rowHeight
                     }
@@ -323,17 +313,16 @@ private fun HomeBody(
     var showLowOnly by remember { mutableStateOf(false) }
 
     // Quick low-stock calculation and filtered list toggle
-    val lowStockCount = remember(itemList) { itemList.count { !it.discontinued && it.quantity in 1..5 } }
+    val lowStockCount = remember(itemList) { itemList.count { !it.discontinued && it.quantity in 1..it.lowStockThreshold } }
 
     val filteredItemList = remember(itemList, searchQuery, showLowOnly) {
         var list = itemList
         if (showLowOnly) {
-            list = list.filter { !it.discontinued && it.quantity in 1..5 }
+            list = list.filter { !it.discontinued && it.quantity in 1..it.lowStockThreshold }
         } else if (searchQuery.isNotBlank()) {
             list = list.filter {
                 it.name.contains(searchQuery, ignoreCase = true) ||
-                it.category.contains(searchQuery, ignoreCase = true) ||
-                it.location.contains(searchQuery, ignoreCase = true)
+                it.category.contains(searchQuery, ignoreCase = true)
             }
         }
         list
@@ -405,7 +394,7 @@ private fun HomeBody(
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
-                placeholder = { Text("Search items, categories, locations...") },
+                placeholder = { Text("Search items, categories...") },
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Default.Search,
@@ -823,8 +812,8 @@ private fun InsightsTabContent(
                         val discontinuedCount = itemList.count { it.discontinued }
                         val activeItems = itemList.filter { !it.discontinued }
                         val outOfStockCount = activeItems.count { it.quantity == 0 }
-                        val lowStockCount = activeItems.count { it.quantity in 1..5 }
-                        val inStockCount = activeItems.count { it.quantity > 5 }
+                        val lowStockCount = activeItems.count { it.quantity in 1..it.lowStockThreshold }
+                        val inStockCount = activeItems.count { it.quantity > it.lowStockThreshold }
                         
                         listOf(
                             Triple("In Stock", inStockCount, Color(0xFF10B981)),
@@ -1008,7 +997,7 @@ private fun InventoryItem(
                         badgeTextStr = "Out of Stock"
                         badgeIcon = Icons.Default.Close
                     }
-                    item.quantity in 1..5 -> {
+                    item.quantity in 1..item.lowStockThreshold -> {
                         badgeBg = Color(0xFFFEF3C7) // Amber 100
                         badgeTxt = Color(0xFF92400E) // Amber 800
                         badgeTextStr = "Low Stock"
@@ -1067,55 +1056,17 @@ private fun InventoryItem(
                 color = MaterialTheme.colorScheme.outlineVariant
             )
 
-            // Metadata: Location, Price, Qty
+            // Metadata: Qty
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Location
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.weight(1.2f)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Place,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = item.location,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1
-                    )
-                }
-
-                // Price Amount
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.weight(1.5f),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = "Price: ",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        text = item.formatedPrice(),
-                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
-
                 // Stock Quantity
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.weight(0.8f),
-                    horizontalArrangement = Arrangement.End
+                    modifier = Modifier.weight(1.0f),
+                    horizontalArrangement = Arrangement.Start
                 ) {
                     Icon(
                         imageVector = Icons.Default.Info,
@@ -1166,9 +1117,9 @@ fun HomeBodyPreview() {
     InventoryTheme {
         HomeBody(
             itemList = listOf(
-                Item(1, "Game", 100.0, 20, "KPZ", "Ali", "ABC Game", false),
-                Item(2, "Pen", 200.0, 3, "KIY", "Siti", "DEF pen", false),
-                Item(3, "TV", 300.0, 0, "KUO", "Alan", "GHI TV", true)
+                Item(1, "Game", 20, "Ali", "ABC Game", false),
+                Item(2, "Pen", 3, "Siti", "DEF pen", false),
+                Item(3, "TV", 0, "Alan", "GHI TV", true)
             ),
             onItemClick = {},
             onExportCsv = {},
@@ -1195,7 +1146,7 @@ fun HomeBodyEmptyListPreview() {
 fun InventoryItemPreview() {
     InventoryTheme {
         InventoryItem(
-            Item(1, "Game", 100.0, 20, "KPZ", "Ali", "ABC Game", false),
+            Item(1, "Game", 20, "Ali", "ABC Game", false),
         )
     }
 }

@@ -241,7 +241,7 @@ fun LoginScreen(
                         Button(
                             onClick = {
                                 if (email.isBlank() || password.isBlank()) {
-                                    formError = "Matric Number and Password must not be empty"
+                                    formError = "Username and Password must not be empty"
                                 } else {
                                     formError = null
                                     if (loginLocked) {
@@ -284,7 +284,7 @@ fun LoginScreen(
                             TextButton(
                                 onClick = {
                                     if (email.isBlank() || password.isBlank()) {
-                                        formError = "Matric Number and Password must not be empty to register"
+                                        formError = "Username and Password must not be empty to register"
                                     } else {
                                         formError = null
                                         viewModel.registerLoginDetails(email, password)

@@ -27,10 +27,10 @@ data class Item(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val name: String,
-    val price: Double,
     val quantity: Int,
-    val location: String = "",
     val category: String = "",
     val itemDetails: String = "",
-    val discontinued: Boolean = false
+    val discontinued: Boolean = false,
+    val lowStockThreshold: Int = 5,
+    val salesLog: String = ""
 )

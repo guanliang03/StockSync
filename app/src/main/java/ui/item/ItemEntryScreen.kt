@@ -37,6 +37,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -204,38 +205,17 @@ fun ItemInputForm(
             )
         )
 
-        // Unit Price
-        OutlinedTextField(
-            value = itemDetails.price,
-            onValueChange = { onValueChange(itemDetails.copy(price = it)) },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-            label = { Text(stringResource(R.string.item_price_req)) },
-            leadingIcon = {
-                Text(
-                    text = "$",
-                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(start = 12.dp, end = 4.dp)
-                )
-            },
-            shape = RoundedCornerShape(12.dp),
-            modifier = Modifier.fillMaxWidth(),
-            enabled = enabled,
-            singleLine = true,
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                unfocusedBorderColor = MaterialTheme.colorScheme.outline
-            )
-        )
 
-        // Storage Location
+
+        // Quantity
         OutlinedTextField(
-            value = itemDetails.location,
-            onValueChange = { onValueChange(itemDetails.copy(location = it)) },
-            label = { Text(stringResource(R.string.loc_name_req)) },
+            value = itemDetails.quantity,
+            onValueChange = { onValueChange(itemDetails.copy(quantity = it)) },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            label = { Text(stringResource(R.string.quantity_req)) },
             leadingIcon = {
                 Icon(
-                    imageVector = Icons.Default.Place,
+                    imageVector = Icons.Default.Info,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -250,15 +230,15 @@ fun ItemInputForm(
             )
         )
 
-        // Quantity
+        // Low Stock Threshold
         OutlinedTextField(
-            value = itemDetails.quantity,
-            onValueChange = { onValueChange(itemDetails.copy(quantity = it)) },
+            value = itemDetails.lowStockThreshold,
+            onValueChange = { onValueChange(itemDetails.copy(lowStockThreshold = it)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            label = { Text(stringResource(R.string.quantity_req)) },
+            label = { Text("Low Stock Alert Threshold") },
             leadingIcon = {
                 Icon(
-                    imageVector = Icons.Default.Info,
+                    imageVector = Icons.Default.Warning,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -350,9 +330,7 @@ private fun ItemEntryScreenPreview() {
             itemUiState = ItemUiState(
                 ItemDetails(
                     name = "Item name",
-                    price = "10.00",
                     quantity = "5",
-                    location = "KPZ",
                     itemDetails = "Something",
                     category = "Ali"
                 )

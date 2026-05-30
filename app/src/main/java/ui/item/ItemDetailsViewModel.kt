@@ -53,24 +53,38 @@ class ItemDetailsViewModel(
             )
 
     /**
-     * Reduces the item quantity by one and update the [ItemsRepository]'s data source.
+     * Reduces the item quantity by a custom amount and updates the data source.
      */
-    fun reduceQuantityByOne() {
+    fun reduceQuantity(amount: Int) {
         viewModelScope.launch {
             val currentItem = uiState.value.itemDetails.toItem()
-            if (currentItem.quantity > 0) {
-                itemsRepository.updateItem(currentItem.copy(quantity = currentItem.quantity - 1))
+            if (currentItem.quantity >= amount && amount > 0) {
+                val now = System.currentTimeMillis()
+                val saleEntries = List(amount) { now.toString() }.joinToString(",")
+                val updatedSalesLog = if (currentItem.salesLog.isBlank()) {
+                    saleEntries
+                } else {
+                    "${currentItem.salesLog},$saleEntries"
+                }
+                itemsRepository.updateItem(
+                    currentItem.copy(
+                        quantity = currentItem.quantity - amount,
+                        salesLog = updatedSalesLog
+                    )
+                )
             }
         }
     }
 
     /**
-     * Increases the item quantity by one (restock) and updates the data source.
+     * Increases the item quantity by a custom amount and updates the data source.
      */
-    fun increaseQuantityByOne() {
+    fun increaseQuantity(amount: Int) {
         viewModelScope.launch {
             val currentItem = uiState.value.itemDetails.toItem()
-            itemsRepository.updateItem(currentItem.copy(quantity = currentItem.quantity + 1))
+            if (amount > 0) {
+                itemsRepository.updateItem(currentItem.copy(quantity = currentItem.quantity + amount))
+            }
         }
     }
 
