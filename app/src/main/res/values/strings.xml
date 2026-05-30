@@ -1,0 +1,68 @@
+<!--
+  ~ Copyright (C) 2023 The Android Open Source Project
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     https://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<resources>
+
+    <string name="login_title">Sign in</string>
+    <string name="login_header">Welcome Back</string>
+    <string name="username_hint">Username</string>
+    <string name="password_hint">Password</string>
+    <string name="login_button">Login</string>
+    <string name="home_title">Home</string>
+    <string name="add_item">Add Item</string>
+    <string name="username">Matric Number</string>
+    <string name="password">Password</string>
+    <string name="login_action">Login</string>
+
+    <string name="app_name">StockSync</string>
+    <string name="attention">Attention</string>
+    <string name="back_button">Back</string>
+    <string name="delete">Delete</string>
+    <string name="delete_question">Are you sure you want to delete?</string>
+    <string name="no_item_description">Welcome to Smart Inventory!\nAdd items to track stock levels by tapping the + button.</string>
+    <string name="edit_item_title">Edit Item</string>
+    <string name="item">Item Name</string>
+    <string name="item_detail_title">Item Details</string>
+    <string name="item_entry_title">Add Item</string>
+    <string name="item_name_req">Item Name*</string>
+    <string name="borrower_name_req">Category*</string>
+    <string name="borrower_name_">Category</string>
+    <string name="item_det_req">Item Description</string>
+    <string name="loc_name_req">Storage Location*</string>
+    <string name="loc_name">Storage Location</string>
+    <string name="item_price_req">Unit Price*</string>
+    <string name="no">No</string>
+    <string name="price">Unit Price</string>
+    <string name="collected_req">Discontinue Item?*</string>
+    <string name="quantity_in_stock">Stock Quantity</string>
+    <string name="in_stock">%d in stock</string>
+    <string name="deposit">Price: %s</string>
+    <string name="quantity_req">Initial Stock Quantity*</string>
+    <string name="save_action">Save</string>
+    <string name="yes">Yes</string>
+    <string name="register_account">Register Account</string>
+    <string name="is_collected">Is item discontinued?</string>
+    <string name="required_fields">*required fields</string>
+    <string name="home">Inventory Dashboard</string>
+    <string name="borrower_name">Category: %s</string>
+    <string name="loc">Storage Location:</string>
+    <string name="remarks">Description / Remarks:</string>
+    <string name="tab_list">Inventory List</string>
+    <string name="tab_insights">Insights &amp; Reports</string>
+    <string name="export_pdf_btn">Export Report as PDF</string>
+    <string name="export_csv_btn">Export Report as CSV</string>
+    <string name="analytics_title">Stock Analytics</string>
+    <string name="reports_title">Export Reports</string>
+</resources>
